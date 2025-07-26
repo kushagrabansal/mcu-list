@@ -10,15 +10,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .table-container {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .phase-header {
-            position: sticky;
-            top: 3.2rem; /* Height of the table header */
-            z-index: 10;
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8">
@@ -29,15 +20,16 @@
         </header>
 
         <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-            <div class="table-container">
-                <table class="w-full text-sm sm:text-base text-left text-gray-300">
-                    <thead class="text-xs text-red-400 uppercase bg-gray-700 sticky top-0 z-20">
+            <!-- This container makes the table scrollable horizontally on small screens -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-300">
+                    <thead class="text-xs text-red-400 uppercase bg-gray-700 sticky top-0 z-10">
                         <tr>
-                            <th scope="col" class="p-4 w-16 text-center">Watched</th>
-                            <th scope="col" class="p-4">Title (Year)</th>
-                            <th scope="col" class="p-4 w-40">Type</th>
-                            <th scope="col" class="p-4 w-40 text-center">On Hotstar Or not</th>
-                            <th scope="col" class="p-4 w-40 text-center">Hindi Audio</th>
+                            <th scope="col" class="p-3 md:p-4 w-16 text-center">Watched</th>
+                            <th scope="col" class="p-3 md:p-4 min-w-[250px]">Title (Year)</th>
+                            <th scope="col" class="p-3 md:p-4 min-w-[120px]">Type</th>
+                            <th scope="col" class="p-3 md:p-4 min-w-[150px] text-center">On Hotstar (India)</th>
+                            <th scope="col" class="p-3 md:p-4 min-w-[120px] text-center">Hindi Audio</th>
                         </tr>
                     </thead>
                     <tbody id="mcu-table-body">
@@ -158,8 +150,7 @@
                 if (item.phase !== currentPhase) {
                     currentPhase = item.phase;
                     const phaseRow = document.createElement('tr');
-                    phaseRow.className = 'phase-header';
-                    phaseRow.innerHTML = `<td colspan="5" class="bg-gray-600 text-red-400 font-bold p-3 text-center text-lg tracking-wider">Phase ${currentPhase}</td>`;
+                    phaseRow.innerHTML = `<td colspan="5" class="bg-gray-600 text-red-400 font-bold p-3 text-center text-lg tracking-wider sticky top-[41px] z-0">Phase ${currentPhase}</td>`;
                     tableBody.appendChild(phaseRow);
                 }
 
@@ -169,7 +160,7 @@
 
                 // Checkbox cell
                 const cellCheckbox = document.createElement('td');
-                cellCheckbox.className = 'p-4 text-center';
+                cellCheckbox.className = 'p-3 md:p-4 text-center';
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.checked = isChecked;
@@ -187,12 +178,12 @@
 
                 // Title cell
                 const cellTitle = document.createElement('td');
-                cellTitle.className = 'p-4 font-medium';
+                cellTitle.className = 'p-3 md:p-4 font-medium';
                 cellTitle.textContent = `${item.title} (${item.year})`;
 
                 // Type cell
                 const cellType = document.createElement('td');
-                cellType.className = 'p-4';
+                cellType.className = 'p-3 md:p-4';
                 const select = document.createElement('select');
                 select.className = 'bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 disabled:opacity-75';
                 select.disabled = true; // Make it read-only
@@ -209,12 +200,12 @@
 
                 // Hotstar cell
                 const cellHotstar = document.createElement('td');
-                cellHotstar.className = 'p-4 text-center';
+                cellHotstar.className = 'p-3 md:p-4 text-center';
                 cellHotstar.textContent = item.hotstar;
 
                 // Hindi Audio cell
                 const cellHindi = document.createElement('td');
-                cellHindi.className = 'p-4 text-center';
+                cellHindi.className = 'p-3 md:p-4 text-center';
                 cellHindi.textContent = item.hindi;
 
 

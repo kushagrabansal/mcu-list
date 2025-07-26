@@ -10,418 +10,303 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Style for the active tab */
-        .tab-active {
-            background-color: #DC2626; /* red-600 */
-            color: white;
+        details > summary {
+            list-style: none;
         }
-        /* Hide inactive tab content */
-        .tab-content {
+        details > summary::-webkit-details-marker {
             display: none;
         }
-        .tab-content-active {
-            display: block;
+        details > summary .summary-arrow {
+            transition: transform 0.2s;
+        }
+        details[open] > summary .summary-arrow {
+            transform: rotate(90deg);
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8">
-    <div class="max-w-7xl mx-auto">
+<body class="bg-gray-900 text-white p-4 sm:p-6">
+    <div class="max-w-4xl mx-auto">
         <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-red-500 tracking-tight">Universal Watchlist</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-red-500 tracking-tight">Universal Watchlist</h1>
             <p class="text-gray-400 mt-2 text-lg">Track your journey through your favorite cinematic universes.</p>
         </header>
 
-        <!-- Tab Navigation -->
-        <div class="mb-4 border-b border-gray-700">
-            <nav class="flex -mb-px space-x-1" aria-label="Tabs">
-                <button class="tab-btn tab-active whitespace-nowrap py-3 px-4 border-b-2 border-transparent font-medium text-sm rounded-t-lg" data-tab="mcu">
-                    Marvel Cinematic Universe
-                </button>
-                <button class="tab-btn text-gray-400 hover:text-white hover:bg-gray-700 whitespace-nowrap py-3 px-4 border-b-2 border-transparent font-medium text-sm rounded-t-lg" data-tab="dc">
-                    DC Universe
-                </button>
-                <button class="tab-btn text-gray-400 hover:text-white hover:bg-gray-700 whitespace-nowrap py-3 px-4 border-b-2 border-transparent font-medium text-sm rounded-t-lg" data-tab="xmen">
-                    X-Men Universe
-                </button>
-            </nav>
-        </div>
-
-        <!-- Tab Content -->
-        <div id="mcu-content" class="tab-content tab-content-active">
-            <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-300">
-                        <thead class="text-xs text-red-400 uppercase bg-gray-700 sticky top-0 z-10">
-                            <tr>
-                                <th scope="col" class="p-3 md:p-4 w-16 text-center">Watched</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[250px]">Title (Year)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[120px]">Type</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[150px] text-center">On Hotstar (India)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[120px] text-center">Hindi Audio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mcu-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="dc-content" class="tab-content">
-            <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-300">
-                        <thead class="text-xs text-blue-400 uppercase bg-gray-700 sticky top-0 z-10">
-                            <tr>
-                                <th scope="col" class="p-3 md:p-4 w-16 text-center">Watched</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[250px]">Title (Year)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[180px] text-center">OTT Platform (India)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[120px] text-center">Hindi Audio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dc-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="xmen-content" class="tab-content">
-            <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-300">
-                        <thead class="text-xs text-yellow-400 uppercase bg-gray-700 sticky top-0 z-10">
-                            <tr>
-                                <th scope="col" class="p-3 md:p-4 w-16 text-center">Watched</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[250px]">Title (Year)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[150px] text-center">On Hotstar (India)</th>
-                                <th scope="col" class="p-3 md:p-4 min-w-[120px] text-center">Hindi Audio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="xmen-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <div class="p-4 bg-gray-800 rounded-b-xl flex justify-end items-center mt-[-1px]">
-             <button id="save-progress" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Save Progress</button>
+        <div class="space-y-4" id="watchlist-container">
+            <!-- Accordions will be generated here -->
         </div>
 
          <footer class="text-center mt-8 text-gray-500 text-sm">
             <p>This list is updated as of July 2024. Availability on streaming services may change.</p>
+            <p class="mt-1">Your progress is saved automatically.</p>
         </footer>
     </div>
 
     <script>
         // --- DATA ---
-        const mcuData = [
-            { phase: 1, title: "Iron Man", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 1, title: "The Incredible Hulk", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 1, title: "Iron Man 2", year: 2010, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 1, title: "Thor", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 1, title: "Captain America: The First Avenger", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 1, title: "The Avengers", year: 2012, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Iron Man 3", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Agents of S.H.I.E.L.D.", year: "2013-2020", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 2, title: "Thor: The Dark World", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Captain America: The Winter Soldier", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Guardians of the Galaxy", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Agent Carter", year: "2015-2016", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 2, title: "Daredevil", year: "2015-2018", type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Avengers: Age of Ultron", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Ant-Man", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 2, title: "Jessica Jones", year: "2015-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Captain America: Civil War", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Luke Cage", year: "2016-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Doctor Strange", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Iron Fist", year: "2017-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Guardians of the Galaxy Vol. 2", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Spider-Man: Homecoming", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "The Defenders", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Inhumans", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Thor: Ragnarok", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "The Punisher", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Runaways", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Black Panther", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Avengers: Infinity War", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Cloak & Dagger", year: "2018-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 3, title: "Ant-Man and the Wasp", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Captain Marvel", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Avengers: Endgame", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 3, title: "Spider-Man: Far From Home", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "WandaVision", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "The Falcon and the Winter Soldier", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Loki", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Black Widow", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "What If...?", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 4, title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Eternals", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Hawkeye", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Spider-Man: No Way Home", year: 2021, type: "Movie", hotstar: "No", hindi: "N/A" },
-            { phase: 4, title: "Moon Knight", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Doctor Strange in the Multiverse of Madness", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Ms. Marvel", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Thor: Love and Thunder", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "I Am Groot", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "She-Hulk: Attorney at Law", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Werewolf by Night", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "Black Panther: Wakanda Forever", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 4, title: "The Guardians of the Galaxy Holiday Special", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "Ant-Man and the Wasp: Quantumania", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "Guardians of the Galaxy Vol. 3", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "Secret Invasion", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "Loki (Season 2)", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "The Marvels", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "What If...? (Season 2)", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "No" },
-            { phase: 5, title: "Echo", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-            { phase: 5, title: "Agatha All Along", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
-        ];
-        const dcData = [
-            { category: "DCEU Movies", title: "Man of Steel", year: 2013, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Batman v Superman: Dawn of Justice", year: 2016, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Suicide Squad", year: 2016, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Wonder Woman", year: 2017, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Justice League", year: 2017, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Aquaman", year: 2018, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Shazam!", year: 2019, ott: "Netflix", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Birds of Prey", year: 2020, ott: "Netflix", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Wonder Woman 1984", year: 2020, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Zack Snyder's Justice League", year: 2021, ott: "JioCinema", hindi: "Yes" },
-            { category: "DCEU Movies", title: "The Suicide Squad", year: 2021, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Black Adam", year: 2022, ott: "Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Shazam! Fury of the Gods", year: 2023, ott: "JioCinema / Prime Video", hindi: "Yes" },
-            { category: "DCEU Movies", title: "The Flash", year: 2023, ott: "JioCinema", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Blue Beetle", year: 2023, ott: "JioCinema", hindi: "Yes" },
-            { category: "DCEU Movies", title: "Aquaman and the Lost Kingdom", year: 2023, ott: "JioCinema", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 1", year: "2012-13", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 2", year: "2013-14", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 1", year: "2014-15", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 3", year: "2014-15", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 2", year: "2015-16", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 4", year: "2015-16", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Supergirl: Season 1", year: "2015-16", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 1", year: 2016, ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 3", year: "2016-17", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 5", year: "2016-17", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Supergirl: Season 2", year: "2016-17", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 2", year: "2016-17", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 4", year: "2017-18", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 6", year: "2017-18", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Supergirl: Season 3", year: "2017-18", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 3", year: "2017-18", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Black Lightning: Season 1", year: 2018, ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 5", year: "2018-19", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 7", year: "2018-19", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Supergirl: Season 4", year: "2018-19", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 4", year: "2018-19", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Black Lightning: Season 2", year: "2018-19", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Batwoman: Season 1", year: "2019-20", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "The Flash: Season 6", year: "2019-20", ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Arrow: Season 8", year: "2019-20", ott: "Netflix", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Supergirl: Season 5", year: "2019-20", ott: "Prime Video", hindi: "No" },
-            { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 5", year: 2020, ott: "Prime Video", hindi: "Yes" },
-            { category: "Arrowverse TV Shows", title: "Black Lightning: Season 3", year: "2019-20", ott: "Netflix", hindi: "No" },
-        ];
-        const xmenData = [
-            { category: "X-Men Original Trilogy", title: "X-Men", year: 2000, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Original Trilogy", title: "X2: X-Men United", year: 2003, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Original Trilogy", title: "X-Men: The Last Stand", year: 2006, hotstar: "Yes", hindi: "Yes" },
-            { category: "Wolverine Trilogy", title: "X-Men Origins: Wolverine", year: 2009, hotstar: "Yes", hindi: "Yes" },
-            { category: "Wolverine Trilogy", title: "The Wolverine", year: 2013, hotstar: "Yes", hindi: "Yes" },
-            { category: "Wolverine Trilogy", title: "Logan", year: 2017, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Prequel Films", title: "X-Men: First Class", year: 2011, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Prequel Films", title: "X-Men: Days of Future Past", year: 2014, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Prequel Films", title: "X-Men: Apocalypse", year: 2016, hotstar: "Yes", hindi: "Yes" },
-            { category: "X-Men Prequel Films", title: "Dark Phoenix", year: 2019, hotstar: "Yes", hindi: "Yes" },
-            { category: "Deadpool Films", title: "Deadpool", year: 2016, hotstar: "Yes", hindi: "Yes" },
-            { category: "Deadpool Films", title: "Deadpool 2", year: 2018, hotstar: "Yes", hindi: "Yes" },
-            { category: "Spin-off", title: "The New Mutants", year: 2020, hotstar: "Yes", hindi: "Yes" },
-        ];
+        const universalData = {
+            mcu: {
+                title: "Marvel Cinematic Universe",
+                progressKey: "mcuProgress",
+                themeColor: "red",
+                data: [
+                    { category: "Phase 1", title: "Iron Man", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 1", title: "The Incredible Hulk", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 1", title: "Iron Man 2", year: 2010, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 1", title: "Thor", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 1", title: "Captain America: The First Avenger", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 1", title: "The Avengers", year: 2012, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Iron Man 3", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Agents of S.H.I.E.L.D.", year: "2013-2020", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 2", title: "Thor: The Dark World", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Captain America: The Winter Soldier", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Guardians of the Galaxy", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Agent Carter", year: "2015-2016", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 2", title: "Daredevil", year: "2015-2018", type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Avengers: Age of Ultron", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Ant-Man", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 2", title: "Jessica Jones", year: "2015-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Captain America: Civil War", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Luke Cage", year: "2016-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Doctor Strange", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Iron Fist", year: "2017-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Guardians of the Galaxy Vol. 2", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Spider-Man: Homecoming", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "The Defenders", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Inhumans", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Thor: Ragnarok", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "The Punisher", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Runaways", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Black Panther", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Avengers: Infinity War", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Cloak & Dagger", year: "2018-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 3", title: "Ant-Man and the Wasp", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Captain Marvel", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Avengers: Endgame", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 3", title: "Spider-Man: Far From Home", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "WandaVision", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "The Falcon and the Winter Soldier", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Loki: Season 1", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Black Widow", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "What If...?: Season 1", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 4", title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Eternals", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Hawkeye", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Spider-Man: No Way Home", year: 2021, type: "Movie", hotstar: "No", hindi: "N/A" },
+                    { category: "Phase 4", title: "Moon Knight", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Doctor Strange in the Multiverse of Madness", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Ms. Marvel", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Thor: Love and Thunder", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "I Am Groot", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "She-Hulk: Attorney at Law", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Werewolf by Night", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "Black Panther: Wakanda Forever", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 4", title: "The Guardians of the Galaxy Holiday Special", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "Ant-Man and the Wasp: Quantumania", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "Guardians of the Galaxy Vol. 3", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "Secret Invasion", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "Loki: Season 2", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "The Marvels", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "What If...?: Season 2", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "No" },
+                    { category: "Phase 5", title: "Echo", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                    { category: "Phase 5", title: "Agatha All Along", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+                ]
+            },
+            dc: {
+                title: "DC Universe",
+                progressKey: "dcProgress",
+                themeColor: "blue",
+                 data: [
+                    { category: "DCEU Movies", title: "Man of Steel", year: 2013, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Batman v Superman: Dawn of Justice", year: 2016, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Suicide Squad", year: 2016, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Wonder Woman", year: 2017, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Justice League", year: 2017, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Aquaman", year: 2018, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Shazam!", year: 2019, ott: "Netflix", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Birds of Prey", year: 2020, ott: "Netflix", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Wonder Woman 1984", year: 2020, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Zack Snyder's Justice League", year: 2021, ott: "JioCinema", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "The Suicide Squad", year: 2021, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Black Adam", year: 2022, ott: "Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Shazam! Fury of the Gods", year: 2023, ott: "JioCinema / Prime Video", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "The Flash", year: 2023, ott: "JioCinema", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Blue Beetle", year: 2023, ott: "JioCinema", hindi: "Yes" },
+                    { category: "DCEU Movies", title: "Aquaman and the Lost Kingdom", year: 2023, ott: "JioCinema", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 1", year: "2012-13", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 2", year: "2013-14", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 1", year: "2014-15", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 3", year: "2014-15", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 2", year: "2015-16", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 4", year: "2015-16", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Supergirl: Season 1", year: "2015-16", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 1", year: 2016, ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 3", year: "2016-17", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 5", year: "2016-17", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Supergirl: Season 2", year: "2016-17", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 2", year: "2016-17", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 4", year: "2017-18", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 6", year: "2017-18", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Supergirl: Season 3", year: "2017-18", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 3", year: "2017-18", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Black Lightning: Season 1", year: 2018, ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 5", year: "2018-19", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 7", year: "2018-19", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Supergirl: Season 4", year: "2018-19", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 4", year: "2018-19", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Black Lightning: Season 2", year: "2018-19", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Batwoman: Season 1", year: "2019-20", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "The Flash: Season 6", year: "2019-20", ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Arrow: Season 8", year: "2019-20", ott: "Netflix", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Supergirl: Season 5", year: "2019-20", ott: "Prime Video", hindi: "No" },
+                    { category: "Arrowverse TV Shows", title: "Legends of Tomorrow: Season 5", year: 2020, ott: "Prime Video", hindi: "Yes" },
+                    { category: "Arrowverse TV Shows", title: "Black Lightning: Season 3", year: "2019-20", ott: "Netflix", hindi: "No" },
+                ]
+            },
+            xmen: {
+                title: "X-Men Universe",
+                progressKey: "xmenProgress",
+                themeColor: "yellow",
+                data: [
+                    { category: "X-Men Original Trilogy", title: "X-Men", year: 2000, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Original Trilogy", title: "X2: X-Men United", year: 2003, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Original Trilogy", title: "X-Men: The Last Stand", year: 2006, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Wolverine Trilogy", title: "X-Men Origins: Wolverine", year: 2009, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Wolverine Trilogy", title: "The Wolverine", year: 2013, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Wolverine Trilogy", title: "Logan", year: 2017, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Prequel Films", title: "X-Men: First Class", year: 2011, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Prequel Films", title: "X-Men: Days of Future Past", year: 2014, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Prequel Films", title: "X-Men: Apocalypse", year: 2016, hotstar: "Yes", hindi: "Yes" },
+                    { category: "X-Men Prequel Films", title: "Dark Phoenix", year: 2019, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Deadpool Films", title: "Deadpool", year: 2016, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Deadpool Films", title: "Deadpool 2", year: 2018, hotstar: "Yes", hindi: "Yes" },
+                    { category: "Spin-off", title: "The New Mutants", year: 2020, hotstar: "Yes", hindi: "Yes" },
+                ]
+            }
+        };
 
-        // --- DOM ELEMENTS ---
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const saveButton = document.getElementById('save-progress');
-        let activeTab = 'mcu';
+        const container = document.getElementById('watchlist-container');
 
         // --- FUNCTIONS ---
-        
-        function initializeMcuProgress() {
-            if (localStorage.getItem('mcuProgress')) return;
-            const progress = {};
+
+        function getProgress(key) {
+            return JSON.parse(localStorage.getItem(key) || '{}');
+        }
+
+        function saveProgress(key, progress) {
+            localStorage.setItem(key, JSON.stringify(progress));
+        }
+
+        function buildWatchlist() {
+            container.innerHTML = ''; // Clear previous content
+
+            Object.keys(universalData).forEach(universeKey => {
+                const universe = universalData[universeKey];
+                const progress = getProgress(universe.progressKey);
+                
+                // Group items by category
+                const groupedData = universe.data.reduce((acc, item) => {
+                    (acc[item.category] = acc[item.category] || []).push(item);
+                    return acc;
+                }, {});
+
+                // Create main universe accordion
+                const universeDetails = document.createElement('details');
+                universeDetails.className = 'bg-gray-800 rounded-lg';
+                universeDetails.open = universeKey === 'mcu'; // Open MCU by default
+
+                const universeSummary = document.createElement('summary');
+                universeSummary.className = `p-4 text-xl font-bold cursor-pointer flex justify-between items-center text-${universe.themeColor}-400`;
+                universeSummary.innerHTML = `
+                    <span>${universe.title}</span>
+                    <svg class="summary-arrow w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                `;
+                universeDetails.appendChild(universeSummary);
+
+                const universeContent = document.createElement('div');
+                universeContent.className = 'p-4 border-t border-gray-700 space-y-3';
+                
+                // Create sub-accordions for categories
+                Object.keys(groupedData).forEach(categoryName => {
+                    const categoryDetails = document.createElement('details');
+                    categoryDetails.className = 'bg-gray-700/50 rounded-lg';
+                    categoryDetails.open = true;
+
+                    const categorySummary = document.createElement('summary');
+                    categorySummary.className = 'px-4 py-3 text-lg font-semibold cursor-pointer flex justify-between items-center';
+                    categorySummary.innerHTML = `
+                        <span>${categoryName}</span>
+                         <svg class="summary-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    `;
+                    categoryDetails.appendChild(categorySummary);
+
+                    const itemsContainer = document.createElement('div');
+                    itemsContainer.className = 'px-4 pb-2 space-y-2';
+
+                    groupedData[categoryName].forEach(item => {
+                        const isChecked = progress[item.title] || false;
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = `p-3 border-b border-gray-600/50 flex items-start space-x-4 ${isChecked ? 'text-gray-500' : ''}`;
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = isChecked;
+                        checkbox.className = `mt-1 w-5 h-5 text-${universe.themeColor}-600 bg-gray-700 border-gray-600 rounded focus:ring-${universe.themeColor}-500 focus:ring-2 cursor-pointer flex-shrink-0`;
+                        checkbox.dataset.title = item.title;
+                        
+                        checkbox.addEventListener('change', (e) => {
+                            const currentProgress = getProgress(universe.progressKey);
+                            currentProgress[item.title] = e.target.checked;
+                            saveProgress(universe.progressKey, currentProgress);
+                            e.target.closest('.flex').parentNode.classList.toggle('text-gray-500', e.target.checked);
+                        });
+
+                        const textDiv = document.createElement('div');
+                        textDiv.className = 'flex-grow';
+                        
+                        const titleP = document.createElement('p');
+                        titleP.className = 'font-semibold';
+                        titleP.textContent = `${item.title} (${item.year})`;
+                        
+                        const detailsP = document.createElement('p');
+                        detailsP.className = 'text-sm text-gray-400';
+                        
+                        let detailsText = '';
+                        if (item.hotstar) {
+                            detailsText = `Hotstar: ${item.hotstar}, Hindi: ${item.hindi}`;
+                        } else if (item.ott) {
+                            detailsText = `Platform: ${item.ott}, Hindi: ${item.hindi}`;
+                        }
+                        detailsP.textContent = detailsText;
+                        
+                        textDiv.appendChild(titleP);
+                        textDiv.appendChild(detailsP);
+                        itemDiv.appendChild(checkbox);
+                        itemDiv.appendChild(textDiv);
+                        itemsContainer.appendChild(itemDiv);
+                    });
+                    
+                    categoryDetails.appendChild(itemsContainer);
+                    universeContent.appendChild(categoryDetails);
+                });
+
+                universeDetails.appendChild(universeContent);
+                container.appendChild(universeDetails);
+            });
+        }
+
+        // --- INITIALIZATION ---
+        if (!localStorage.getItem('mcuProgress')) {
+             const progress = {};
             const cutoffTitle = "The Falcon and the Winter Soldier";
             let pastCutoff = false;
-            mcuData.forEach(item => {
+            universalData.mcu.data.forEach(item => {
                 if (!pastCutoff) progress[item.title] = true;
                 if (item.title === cutoffTitle) pastCutoff = true;
             });
-            localStorage.setItem('mcuProgress', JSON.stringify(progress));
+            saveProgress('mcuProgress', progress);
         }
 
-        function renderRow(item, progress, columns) {
-            const isChecked = progress[item.title] || false;
-            const row = document.createElement('tr');
-            row.className = `border-b border-gray-700 ${isChecked ? 'bg-gray-800 text-gray-500' : 'bg-gray-800 hover:bg-gray-600'}`;
-            
-            const cellCheckbox = document.createElement('td');
-            cellCheckbox.className = 'p-3 md:p-4 text-center';
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = isChecked;
-            checkbox.className = 'w-5 h-5 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2 cursor-pointer';
-            checkbox.dataset.title = item.title;
-            checkbox.addEventListener('change', (e) => {
-                const parentRow = e.target.closest('tr');
-                parentRow.classList.toggle('text-gray-500', e.target.checked);
-            });
-            cellCheckbox.appendChild(checkbox);
-            row.appendChild(cellCheckbox);
-
-            columns.forEach(col => {
-                const cell = document.createElement('td');
-                cell.className = 'p-3 md:p-4' + (col.align === 'center' ? ' text-center' : '');
-                
-                let cellValue = item[col.key];
-                if (col.transform) {
-                    cellValue = col.transform(item[col.key], item);
-                }
-
-                if (col.isSelect) {
-                    const select = document.createElement('select');
-                    select.className = 'bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 disabled:opacity-75';
-                    select.disabled = true;
-                    col.options.forEach(opt => {
-                        const option = document.createElement('option');
-                        option.value = opt;
-                        option.textContent = opt;
-                        select.appendChild(option);
-                    });
-                    select.value = cellValue;
-                    cell.appendChild(select);
-                } else {
-                    cell.textContent = cellValue;
-                }
-                row.appendChild(cell);
-            });
-
-            return row;
-        }
-
-        function renderMcuTable() {
-            const tableBody = document.getElementById('mcu-table-body');
-            const watchedProgress = JSON.parse(localStorage.getItem('mcuProgress') || '{}');
-            tableBody.innerHTML = '';
-            let currentPhase = 0;
-            const columns = [
-                { key: 'title', transform: (val, item) => `${val} (${item.year})` },
-                { key: 'type', isSelect: true, options: ['Movie', 'TV Show'] },
-                { key: 'hotstar', align: 'center' },
-                { key: 'hindi', align: 'center' },
-            ];
-            mcuData.forEach((item) => {
-                if (item.phase !== currentPhase) {
-                    currentPhase = item.phase;
-                    const phaseRow = document.createElement('tr');
-                    phaseRow.innerHTML = `<td colspan="5" class="bg-gray-600 text-red-400 font-bold p-3 text-center text-lg tracking-wider sticky top-[41px] z-0">Phase ${currentPhase}</td>`;
-                    tableBody.appendChild(phaseRow);
-                }
-                const row = renderRow(item, watchedProgress, columns);
-                tableBody.appendChild(row);
-            });
-        }
-
-        function renderDcTable() {
-            const tableBody = document.getElementById('dc-table-body');
-            const watchedProgress = JSON.parse(localStorage.getItem('dcProgress') || '{}');
-            tableBody.innerHTML = '';
-            let currentCategory = "";
-            const columns = [
-                { key: 'title', transform: (val, item) => `${val} (${item.year})` },
-                { key: 'ott', align: 'center' },
-                { key: 'hindi', align: 'center' },
-            ];
-            dcData.forEach((item) => {
-                if (item.category !== currentCategory) {
-                    currentCategory = item.category;
-                    const categoryRow = document.createElement('tr');
-                    categoryRow.innerHTML = `<td colspan="4" class="bg-gray-600 text-blue-400 font-bold p-3 text-center text-lg tracking-wider sticky top-[41px] z-0">${currentCategory}</td>`;
-                    tableBody.appendChild(categoryRow);
-                }
-                const row = renderRow(item, watchedProgress, columns);
-                tableBody.appendChild(row);
-            });
-        }
-
-        function renderXmenTable() {
-            const tableBody = document.getElementById('xmen-table-body');
-            const watchedProgress = JSON.parse(localStorage.getItem('xmenProgress') || '{}');
-            tableBody.innerHTML = '';
-            let currentCategory = "";
-            const columns = [
-                { key: 'title', transform: (val, item) => `${val} (${item.year})` },
-                { key: 'hotstar', align: 'center' },
-                { key: "hindi", align: 'center' },
-            ];
-            xmenData.forEach((item) => {
-                if (item.category !== currentCategory) {
-                    currentCategory = item.category;
-                    const categoryRow = document.createElement('tr');
-                    categoryRow.innerHTML = `<td colspan="4" class="bg-gray-600 text-yellow-400 font-bold p-3 text-center text-lg tracking-wider sticky top-[41px] z-0">${currentCategory}</td>`;
-                    tableBody.appendChild(categoryRow);
-                }
-                const row = renderRow(item, watchedProgress, columns);
-                tableBody.appendChild(row);
-            });
-        }
-        
-        function saveProgress() {
-            const progressKey = `${activeTab}Progress`;
-            const tableBodyId = `${activeTab}-table-body`;
-            const checkboxes = document.querySelectorAll(`#${tableBodyId} input[type="checkbox"]`);
-            const progress = {};
-            checkboxes.forEach(checkbox => {
-                progress[checkbox.dataset.title] = checkbox.checked;
-            });
-            localStorage.setItem(progressKey, JSON.stringify(progress));
-            
-            const originalText = saveButton.textContent;
-            saveButton.textContent = 'Progress Saved!';
-            saveButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-            saveButton.classList.add('bg-green-600');
-            setTimeout(() => {
-                saveButton.textContent = originalText;
-                saveButton.classList.remove('bg-green-600');
-                saveButton.classList.add('bg-red-600', 'hover:bg-red-700');
-            }, 2000);
-        }
-
-        function switchTab(e) {
-            const targetTab = e.currentTarget.dataset.tab;
-            activeTab = targetTab;
-
-            tabButtons.forEach(button => {
-                button.classList.remove('tab-active');
-                button.classList.add('text-gray-400', 'hover:bg-gray-700');
-            });
-            e.currentTarget.classList.add('tab-active');
-            e.currentTarget.classList.remove('text-gray-400', 'hover:bg-gray-700');
-
-            tabContents.forEach(content => {
-                content.classList.remove('tab-content-active');
-            });
-            document.getElementById(`${targetTab}-content`).classList.add('tab-content-active');
-            
-            if (targetTab === 'mcu') renderMcuTable();
-            else if (targetTab === 'dc') renderDcTable();
-            else if (targetTab === 'xmen') renderXmenTable();
-        }
-
-        // --- EVENT LISTENERS ---
-        saveButton.addEventListener('click', saveProgress);
-        tabButtons.forEach(button => button.addEventListener('click', switchTab));
-
-        // --- INITIALIZATION ---
-        initializeMcuProgress();
-        renderMcuTable();
+        buildWatchlist();
 
     </script>
 </body>

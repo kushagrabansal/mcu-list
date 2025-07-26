@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCU Watchlist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .table-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .phase-header {
+            position: sticky;
+            top: 3.2rem; /* Height of the table header */
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-red-500 tracking-tight">Marvel Cinematic Universe Watchlist</h1>
+            <p class="text-gray-400 mt-2 text-lg">Track your journey through the MCU, from Iron Man (2008) to today.</p>
+        </header>
+
+        <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+            <div class="table-container">
+                <table class="w-full text-sm sm:text-base text-left text-gray-300">
+                    <thead class="text-xs text-red-400 uppercase bg-gray-700 sticky top-0 z-20">
+                        <tr>
+                            <th scope="col" class="p-4 w-16 text-center">Watched</th>
+                            <th scope="col" class="p-4">Title (Year)</th>
+                            <th scope="col" class="p-4 w-40">Type</th>
+                            <th scope="col" class="p-4 w-40 text-center">On Hotstar Or not</th>
+                            <th scope="col" class="p-4 w-40 text-center">Hindi Audio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mcu-table-body">
+                        <!-- MCU content will be dynamically inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-4 bg-gray-700 flex justify-end items-center">
+                 <button id="save-progress" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Save Progress</button>
+            </div>
+        </div>
+         <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>This list is updated as of July 2024. Availability on streaming services may change.</p>
+        </footer>
+    </div>
+
+    <script>
+        const mcuData = [
+            // Phase One
+            { phase: 1, title: "Iron Man", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 1, title: "The Incredible Hulk", year: 2008, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 1, title: "Iron Man 2", year: 2010, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 1, title: "Thor", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 1, title: "Captain America: The First Avenger", year: 2011, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 1, title: "The Avengers", year: 2012, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            // Phase Two
+            { phase: 2, title: "Iron Man 3", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Agents of S.H.I.E.L.D.", year: "2013-2020", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 2, title: "Thor: The Dark World", year: 2013, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Captain America: The Winter Soldier", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Guardians of the Galaxy", year: 2014, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Agent Carter", year: "2015-2016", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 2, title: "Daredevil", year: "2015-2018", type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Avengers: Age of Ultron", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Ant-Man", year: 2015, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 2, title: "Jessica Jones", year: "2015-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            // Phase Three
+            { phase: 3, title: "Captain America: Civil War", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Luke Cage", year: "2016-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Doctor Strange", year: 2016, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Iron Fist", year: "2017-2018", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Guardians of the Galaxy Vol. 2", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Spider-Man: Homecoming", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "The Defenders", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Inhumans", year: 2017, type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Thor: Ragnarok", year: 2017, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "The Punisher", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Runaways", year: "2017-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Black Panther", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Avengers: Infinity War", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Cloak & Dagger", year: "2018-2019", type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 3, title: "Ant-Man and the Wasp", year: 2018, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Captain Marvel", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Avengers: Endgame", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 3, title: "Spider-Man: Far From Home", year: 2019, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            // Phase Four
+            { phase: 4, title: "WandaVision", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "The Falcon and the Winter Soldier", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Loki", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Black Widow", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "What If...?", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 4, title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Eternals", year: 2021, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Hawkeye", year: 2021, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Spider-Man: No Way Home", year: 2021, type: "Movie", hotstar: "No", hindi: "N/A" },
+            { phase: 4, title: "Moon Knight", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Doctor Strange in the Multiverse of Madness", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Ms. Marvel", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Thor: Love and Thunder", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "I Am Groot", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "She-Hulk: Attorney at Law", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Werewolf by Night", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "Black Panther: Wakanda Forever", year: 2022, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 4, title: "The Guardians of the Galaxy Holiday Special", year: 2022, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+             // Phase Five
+            { phase: 5, title: "Ant-Man and the Wasp: Quantumania", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "Guardians of the Galaxy Vol. 3", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "Secret Invasion", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "Loki (Season 2)", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "The Marvels", year: 2023, type: "Movie", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "What If...? (Season 2)", year: 2023, type: "TV Show", hotstar: "Yes", hindi: "No" },
+            { phase: 5, title: "Echo", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+            { phase: 5, title: "Agatha All Along", year: 2024, type: "TV Show", hotstar: "Yes", hindi: "Yes" },
+        ];
+
+        const tableBody = document.getElementById('mcu-table-body');
+        const saveButton = document.getElementById('save-progress');
+        
+        // Function to set initial progress if none is saved
+        function initializeProgress() {
+            if (localStorage.getItem('mcuProgress')) {
+                return; // Progress already exists, do nothing
+            }
+
+            const progress = {};
+            const cutoffTitle = "The Falcon and the Winter Soldier";
+            let pastCutoff = false;
+
+            mcuData.forEach(item => {
+                if (!pastCutoff) {
+                    progress[item.title] = true;
+                }
+                if (item.title === cutoffTitle) {
+                    pastCutoff = true;
+                }
+            });
+            localStorage.setItem('mcuProgress', JSON.stringify(progress));
+        }
+
+        // Function to render the table
+        function renderTable() {
+            const watchedProgress = JSON.parse(localStorage.getItem('mcuProgress') || '{}');
+            tableBody.innerHTML = ''; // Clear existing rows
+            let currentPhase = 0;
+
+            mcuData.forEach((item) => {
+                // Add phase header row if the phase changes
+                if (item.phase !== currentPhase) {
+                    currentPhase = item.phase;
+                    const phaseRow = document.createElement('tr');
+                    phaseRow.className = 'phase-header';
+                    phaseRow.innerHTML = `<td colspan="5" class="bg-gray-600 text-red-400 font-bold p-3 text-center text-lg tracking-wider">Phase ${currentPhase}</td>`;
+                    tableBody.appendChild(phaseRow);
+                }
+
+                const isChecked = watchedProgress[item.title] || false;
+                const row = document.createElement('tr');
+                row.className = `border-b border-gray-700 ${isChecked ? 'bg-gray-800 text-gray-500' : 'bg-gray-800 hover:bg-gray-600'}`;
+
+                // Checkbox cell
+                const cellCheckbox = document.createElement('td');
+                cellCheckbox.className = 'p-4 text-center';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isChecked;
+                checkbox.className = 'w-5 h-5 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2 cursor-pointer';
+                checkbox.dataset.title = item.title;
+                checkbox.addEventListener('change', (e) => {
+                    const parentRow = e.target.closest('tr');
+                    if (e.target.checked) {
+                        parentRow.classList.add('text-gray-500');
+                    } else {
+                        parentRow.classList.remove('text-gray-500');
+                    }
+                });
+                cellCheckbox.appendChild(checkbox);
+
+                // Title cell
+                const cellTitle = document.createElement('td');
+                cellTitle.className = 'p-4 font-medium';
+                cellTitle.textContent = `${item.title} (${item.year})`;
+
+                // Type cell
+                const cellType = document.createElement('td');
+                cellType.className = 'p-4';
+                const select = document.createElement('select');
+                select.className = 'bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 disabled:opacity-75';
+                select.disabled = true; // Make it read-only
+                const optionMovie = document.createElement('option');
+                optionMovie.value = 'Movie';
+                optionMovie.textContent = 'Movie';
+                const optionTV = document.createElement('option');
+                optionTV.value = 'TV Show';
+                optionTV.textContent = 'TV Show';
+                select.appendChild(optionMovie);
+                select.appendChild(optionTV);
+                select.value = item.type;
+                cellType.appendChild(select);
+
+                // Hotstar cell
+                const cellHotstar = document.createElement('td');
+                cellHotstar.className = 'p-4 text-center';
+                cellHotstar.textContent = item.hotstar;
+
+                // Hindi Audio cell
+                const cellHindi = document.createElement('td');
+                cellHindi.className = 'p-4 text-center';
+                cellHindi.textContent = item.hindi;
+
+
+                row.appendChild(cellCheckbox);
+                row.appendChild(cellTitle);
+                row.appendChild(cellType);
+                row.appendChild(cellHotstar);
+                row.appendChild(cellHindi);
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Function to save progress
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('#mcu-table-body input[type="checkbox"]');
+            const progress = {};
+            checkboxes.forEach(checkbox => {
+                progress[checkbox.dataset.title] = checkbox.checked;
+            });
+            localStorage.setItem('mcuProgress', JSON.stringify(progress));
+            
+            // Show a confirmation message
+            const originalText = saveButton.textContent;
+            saveButton.textContent = 'Progress Saved!';
+            saveButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            saveButton.classList.add('bg-green-600');
+            setTimeout(() => {
+                saveButton.textContent = originalText;
+                saveButton.classList.remove('bg-green-600');
+                saveButton.classList.add('bg-red-600', 'hover:bg-red-700');
+            }, 2000);
+        }
+
+        // Event listener for the save button
+        saveButton.addEventListener('click', saveProgress);
+
+        // Set initial state and render the table on page load
+        initializeProgress();
+        renderTable();
+    </script>
+</body>
+</html>
